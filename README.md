@@ -10,6 +10,9 @@ Reference of roles;
 
 |URI                 |HTTP Method|Description            |Role |Tested|
 |--------------------|-----------|-----------------------|-----|------|
+|**AUTH**|
+|api/auth            |POST       |Authenticate a user and generate JWT token| -   |  ❌  |
+|api/auth/tiempo     |POST       |Get remaining time of token| -   |  ❌  |
 |**CATEGORIAS**|
 |api/categorias      |GET        |Get all categories     |A, U |  ❌  |
 |api/categorias/{id} |GET        |Get a category by ID   |A, U |  ❌  |
@@ -37,3 +40,7 @@ Reference of roles;
 |api/usuarios        |POST       |Create a new user      |A    |  ❌  |
 |api/usuarios/{email}|PUT        |Update a user by email |A    |  ❌  |
 |api/usuarios/{email}|DELETE     |Delete a user by email |A    |  ❌  |
+|**ROLES**|
+|api/roles           |GET        |Get all roles          |A    |  ❌  |
+|**BITACORA**|
+|api/bitacora        |GET        |Get all logs           |A    |  ❌  |
