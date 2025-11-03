@@ -11,7 +11,7 @@ Reference of roles;
 |URI                 |HTTP Method|Description            |Role |Tested|
 |--------------------|-----------|-----------------------|-----|------|
 |**AUTH**|
-|api/auth            |POST       |Authenticate a user and generate JWT token| -   |  ❌  |
+|api/auth            |POST       |Generate JWT token     | -   |  ❌  |
 |api/auth/tiempo     |POST       |Get remaining time of token| -   |  ❌  |
 |**CATEGORIAS**|
 |api/categorias      |GET        |Get all categories     |A, U |  ❌  |
