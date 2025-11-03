@@ -97,7 +97,7 @@ self.update = async function (req, res, next) {
 }
 
 //DELETE: api/usuarios/{email}
-self.getAll = async function (req, res, next) {
+self.delete = async function (req, res, next) {
     const email = req.params.email
     let data = null
 
@@ -119,4 +119,4 @@ self.getAll = async function (req, res, next) {
     }
 }
 
-module.export = self
+module.exports = self
