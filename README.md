@@ -44,3 +44,18 @@ Reference of roles;
 |api/roles           |GET        |Get all roles          |A    |  ❌  |
 |**BITACORA**|
 |api/bitacora        |GET        |Get all logs           |A    |  ❌  |
+
+## Pending Tasks
+- [ ] Test all endpoints
+- [ ] Implement support for shopping cart and orders funcionality
+- [ ] Implemente stronger validation in controllers
+
+## Security Practices
+- Data input validation
+- Authentication and password management
+- Authorization (role-based access control)
+- Keeping it simple
+- Cryptography practices
+- Error handling and logging
+- Data protection
+- Threat modeling
