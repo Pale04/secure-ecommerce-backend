@@ -10,7 +10,7 @@ const errorHandler = (err, req, res, next) => {
 
     let email = 'Anónimo'
     if (req.decodedToken) {
-        email.req.decodedToken[ClaimTypes.Name];
+        email = req.decodedToken[ClaimTypes.Name];
     }
 
     fs.appendFile('log/log.txt', new Date() + ` - ${statusCode} - ${ip} - ${email} - ${(err.message || defaultMessage)}\n`, err => {
@@ -29,5 +29,5 @@ const errorHandler = (err, req, res, next) => {
         res.status(statusCode).send({ mensaje: defaultMessage })
     }
 
-    module.exports = errorHandler
 }
+module.exports = errorHandler
