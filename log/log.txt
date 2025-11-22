@@ -1,0 +1,1 @@
+Sat Nov 22 2025 16:59:03 GMT-0600 (GMT-06:00) - 500 - ::ffff:127.0.0.1 - Anónimo - jwt must be provided
