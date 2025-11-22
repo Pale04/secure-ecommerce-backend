@@ -96,7 +96,7 @@ self.delete = async (req, res, next) => {
     }
 
     if(data === 1) {
-        req,bitacora('categoria.eliminar', id)
+        req.bitacora('categoria.eliminar', id)
         return res.status(204).send()
     }
     return res.status(404).send()
