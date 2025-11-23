@@ -98,10 +98,14 @@ self.update = async function (req, res, next) {
     }
 
     let id = req.params.id
-    let body = req.body
     let data
     try {
-        data = await producto.update(body, { where: {id: id} })
+        data = await producto.update({
+            titulo: req.body.titulo,
+            descripcion: req.body.descripcion,
+            precio: req.body.precio,
+            archivoid: req.body.archivoid || null
+        }, { where: {id: id} })
     } catch (error) {
         return next(error)
     }
