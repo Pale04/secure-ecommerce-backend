@@ -45,13 +45,16 @@ self.get = async function (req, res, next) {
     if(!data) {
         return res.status(404).send()
     }
-    let imagen = data.datos
+
+    let imagen
     if(!data.indb) {
         try {
             imagen = fs.readFileSync('uploads/' + data.nombre)
         } catch (error) {
             return next(error)
         }
+    } else {
+        imagen = data.datos
     }
 
     res.status(200).contentType(data.mime).send(imagen)
@@ -59,7 +62,7 @@ self.get = async function (req, res, next) {
 
 //POST api/archivos
 self.create = async function (req, res, next) {
-    if(req.file == undefined) {
+    if(!req.file) {
         return res.status(400).json('El archivo es obligatorio')
     }
 
@@ -70,7 +73,7 @@ self.create = async function (req, res, next) {
             binario = fs.readFileSync('uploads/' + req.file.filename)
             fs.existsSync('uploads/' + req.file.filename) && fs.unlinkSync('uploads/' + req.file.filename)
         } catch(error) {
-            return next(error)
+            return next(error, req, res)
         }
         indb = true
     }
@@ -85,7 +88,7 @@ self.create = async function (req, res, next) {
             datos: binario
         })
     } catch (error) {
-        return next(error)
+        return next(error, req, res)
     }
 
     if(data) {
@@ -101,7 +104,7 @@ self.create = async function (req, res, next) {
 
 //PUT: api/archivos/{id}
 self.update = async function (req, res, next) {
-    if(req.file == undefined) {
+    if(!req.file) {
         return res.status(400).json('El archivo es obligatorio')
     }
 
@@ -157,7 +160,7 @@ self.update = async function (req, res, next) {
         }
     }
 
-    res.status(204).send
+    res.status(204).send()
 }
 
 //DELETE: api/archivos/{id}

@@ -2,7 +2,7 @@ const fs = require('fs')
 const requestIp = require('request-ip')
 const ClaimTypes = require('../config/claimtypes')
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res) => {
     let defaultMessage = 'No se ha podido procesar la petición. Inténtelo de nuevo más tarde'
     const statusCode = err.statusCode || 500
 
