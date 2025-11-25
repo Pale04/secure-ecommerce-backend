@@ -11,8 +11,8 @@ Reference of roles;
 |URI                 |HTTP Method|Description            |Role |Tested|
 |--------------------|-----------|-----------------------|-----|------|
 |**AUTH**|
-|api/auth            |POST       |Generate JWT token     | -   |  ❌  |
-|api/auth/tiempo     |POST       |Get remaining time of token| -   |  ❌  |
+|api/auth            |POST       |Generate JWT token     | -   |  ✅  |
+|api/auth/tiempo     |POST       |Get remaining time of token| -   |  ✅  |
 |**CATEGORIAS**|
 |api/categorias      |GET        |Get all categories     |A, U |  ❌  |
 |api/categorias/{id} |GET        |Get a category by ID   |A, U |  ❌  |
@@ -29,7 +29,7 @@ Reference of roles;
 |api/productos/{id}/categoria/{id}|DELETE|??             | -   |  ❌  |
 |**ARCHIVOS**|
 |api/archivos        |GET        |Get all files          |A    |  ✅  |
-|api/archivos/{id}/detalle|GET   |Get details of a file  |-    |  ✅  |
+|api/archivos/{id}/detalle|GET   |Get details of a file  |A    |  ✅  |
 |api/archivos/{id}   |GET        |Get a file by ID       |A    |  ✅  |
 |api/archivos        |POST       |Upload a new file      |A    |  ✅  |
 |api/archivos/{id}   |PUT        |Update a file by ID    |A    |  ✅  |

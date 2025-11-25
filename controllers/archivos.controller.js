@@ -1,6 +1,6 @@
 const {archivo} = require('../models')
 const fs = require('fs')
-const { body, param, validationResult } = require('express-validator')
+const { param, validationResult } = require('express-validator')
 
 let self = {}
 

@@ -1,14 +1,28 @@
 const bcrypt = require('bcrypt')
 const { usuario, rol, Sequelize } = require('../models')
 const { GeneraToken, TiempoRestanteToken } = require('../services/jwttoken.service')
+const { body, validationResult } = require('express-validator')
 
 let self = {}
+self.validator = [
+    body('email')
+        .notEmpty().withMessage('El correo es necesario')
+        .isLength({ max: 255 }).withMessage('El correo excede los 255 caracteres')
+        .isEmail().withMessage('El correo no tiene el formato correcto'),
+    body('password')
+        .notEmpty().withMessage('La contraseña es requerida')
+        .isLength({ max: 255 }).withMessage('La contraseña excede los 255 caracteres')
+    //    .isStrongPassword().withMessage('La contrasña no es suficientemente segura')
+]
 
 //POST: api/auth
 self.login = async function (req, res, next) {
-    const { email, password } = req.body
-    //TODO: validar email y password (sanitizar y formato valido)
+    const errors = validationResult(req)
+    if(!errors.isEmpty()) {
+        return res.status(400).send()
+    }
 
+    const { email, password } = req.body
     let data
     try {
         data = await usuario.findOne({
