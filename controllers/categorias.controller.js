@@ -1,10 +1,16 @@
 const { categoria } = require('../models')
-const { body, validationResult } = require('express-validator')
+const { param, body, validationResult } = require('express-validator')
 
 let self = {}
+    
+self.bodyValidator = [
+    body('nombre')
+        .notEmpty().withMessage('El nombre es necesario')
+        .isLength({ max: 255}).withMessage('El nombre es muy largo')
+]
 
-self.categoriaValidator = [
-    body('nombre', 'El campo {0} es obligatorio').not().isEmpty()
+self.paramValidator = [
+    param('id').isInt().withMessage('El ID no es válido')
 ]
 
 //GET api/categorias
@@ -20,9 +26,15 @@ self.getAll = async (req, res, next) => {
 
 //GET api/categorias/{id}
 self.get = async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errors: errors.array()
+        })
+    }
+
     let id = req.params.id
     let data = null
-    
     try {
         data = await categoria.findByPk(id, { attributes: [['id', 'categoriaId'], 'nombre', 'protegida'] })
     } catch (error) {
@@ -38,8 +50,11 @@ self.get = async (req, res, next) => {
 //POST api/categorias
 self.create = async (req, res, next) => {
     const errors = validationResult(req)
-    if (!errors.isEmpty())
-        throw new Error(JSON.stringify(errors))
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errors: errors.array()
+        })
+    }
 
     let data 
     try {
@@ -55,14 +70,18 @@ self.create = async (req, res, next) => {
 //PUT: api/categorias/{id}
 self.update = async (req, res, next) => {
     const errors = validationResult(req)
-    if (!errors.isEmpty())
-        throw new Error(JSON.stringify(errors))
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errors: errors.array()
+        })
+    }
 
-    let id = req.params.id
-    let body = req.body
+    const id = req.params.id
     let data 
     try {
-        data = await categoria.update(body, { where: { id: id } })
+        data = await categoria.update({
+            nombre: req.body.nombre
+        }, { where: { id: id } })
     } catch (error) {
         return next(error)
     }
@@ -76,6 +95,13 @@ self.update = async (req, res, next) => {
 
 //DELETE api/categorias/{id}
 self.delete = async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errors: errors.array()
+        })
+    }
+
     const id = req.params.id
     let data = null
     try {

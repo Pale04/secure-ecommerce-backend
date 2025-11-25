@@ -6,15 +6,15 @@ const Authorize = require('../middlewares/auth.middleware')
 router.get('/', Authorize('Usuario,Administrador'), categorias.getAll)
 
 //GET: api/categorias/{id}
-router.get('/:id', Authorize('Usuario,Administrador'), categorias.get)
+router.get('/:id', Authorize('Usuario,Administrador'), categorias.paramValidator, categorias.get)
 
 //POST: api/categorias
-router.post('/', Authorize('Administrador'), categorias.categoriaValidator, categorias.create)
+router.post('/', Authorize('Administrador'), categorias.bodyValidator, categorias.create)
 
 //PUT: api/categorias/{id}
-router.put('/:id', Authorize('Administrador'), categorias.categoriaValidator, categorias.update)
+router.put('/:id', Authorize('Administrador'), [...categorias.paramValidator, ...categorias.bodyValidator], categorias.update)
 
 //DELETE: api/categorias/{id}
-router.delete('/:id', Authorize('Administrador'), categorias.delete)
+router.delete('/:id', Authorize('Administrador'), categorias.paramValidator, categorias.delete)
 
 module.exports = router

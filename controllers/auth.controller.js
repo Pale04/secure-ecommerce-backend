@@ -7,19 +7,20 @@ let self = {}
 self.validator = [
     body('email')
         .notEmpty().withMessage('El correo es necesario')
-        .isLength({ max: 255 }).withMessage('El correo excede los 255 caracteres')
-        .isEmail().withMessage('El correo no tiene el formato correcto'),
+        .isLength({ max: 255 }).withMessage('El correo es muy largo')
+        .isEmail().withMessage('El correo no es valido'),
     body('password')
         .notEmpty().withMessage('La contraseña es requerida')
-        .isLength({ max: 255 }).withMessage('La contraseña excede los 255 caracteres')
-    //    .isStrongPassword().withMessage('La contrasña no es suficientemente segura')
+        .isLength({ max: 255 }).withMessage('La contraseña es muy larga')
 ]
 
 //POST: api/auth
 self.login = async function (req, res, next) {
     const errors = validationResult(req)
     if(!errors.isEmpty()) {
-        return res.status(400).send()
+        return res.status(400).json({
+            errors: errors.array()
+        })
     }
 
     const { email, password } = req.body

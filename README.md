@@ -14,11 +14,11 @@ Reference of roles;
 |api/auth            |POST       |Generate JWT token     | -   |  ✅  |
 |api/auth/tiempo     |POST       |Get remaining time of token| A, U |  ✅  |
 |**CATEGORIAS**|
-|api/categorias      |GET        |Get all categories     |A, U |  ❌  |
-|api/categorias/{id} |GET        |Get a category by ID   |A, U |  ❌  |
-|api/categorias      |POST       |Create a new category  |A    |  ❌  |
-|api/categorias/{id} |PUT        |Update a category by ID|A    |  ❌  |
-|api/categorias/{id} |DELETE     |Delete a category by ID|A    |  ❌  |
+|api/categorias      |GET        |Get all categories     |A, U |  ✅  |
+|api/categorias/{id} |GET        |Get a category by ID   |A, U |  ✅  |
+|api/categorias      |POST       |Create a new category  |A    |  ✅  |
+|api/categorias/{id} |PUT        |Update a category by ID|A    |  ✅  |
+|api/categorias/{id} |DELETE     |Delete a category by ID|A    |  ✅  |
 |**PRODUCTOS**|
 |api/productos       |GET        |Get all products       |A, U |  ❌  |
 |api/productos/{id}  |GET        |Get a product by ID    |A, U |  ❌  |
