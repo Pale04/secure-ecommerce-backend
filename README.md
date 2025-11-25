@@ -12,7 +12,7 @@ Reference of roles;
 |--------------------|-----------|-----------------------|-----|------|
 |**AUTH**|
 |api/auth            |POST       |Generate JWT token     | -   |  ✅  |
-|api/auth/tiempo     |POST       |Get remaining time of token| -   |  ✅  |
+|api/auth/tiempo     |POST       |Get remaining time of token| A, U |  ✅  |
 |**CATEGORIAS**|
 |api/categorias      |GET        |Get all categories     |A, U |  ❌  |
 |api/categorias/{id} |GET        |Get a category by ID   |A, U |  ❌  |
@@ -43,7 +43,7 @@ Reference of roles;
 |**ROLES**|
 |api/roles           |GET        |Get all roles          |A    |  ❌  |
 |**BITACORA**|
-|api/bitacora        |GET        |Get all logs           |A    |  ❌  |
+|api/bitacora        |GET        |Get all logs           |A    |  ✅  |
 
 ## Pending Tasks
 - [ ] Test all endpoints
