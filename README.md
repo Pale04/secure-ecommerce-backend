@@ -28,12 +28,12 @@ Reference of roles;
 |api/productos/{id}/categoria|GET |??                    | -   |  ❌  |
 |api/productos/{id}/categoria/{id}|DELETE|??             | -   |  ❌  |
 |**ARCHIVOS**|
-|api/archivos        |GET        |Get all files          |A    |  ❌  |
-|api/archivos/{id}/detalle|GET   |Get details of a file  |-    |  ❌  |
-|api/archivos/{id}   |GET        |Get a file by ID       |A    |  ❌  |
-|api/archivos        |POST       |Upload a new file      |A    |  ❌  |
-|api/archivos/{id}   |PUT        |Update a file by ID    |A    |  ❌  |
-|api/archivos/{id}   |DELETE     |Delete a file by ID    |A    |  ❌  |
+|api/archivos        |GET        |Get all files          |A    |  ✅  |
+|api/archivos/{id}/detalle|GET   |Get details of a file  |-    |  ✅  |
+|api/archivos/{id}   |GET        |Get a file by ID       |A    |  ✅  |
+|api/archivos        |POST       |Upload a new file      |A    |  ✅  |
+|api/archivos/{id}   |PUT        |Update a file by ID    |A    |  ✅  |
+|api/archivos/{id}   |DELETE     |Delete a file by ID    |A    |  ✅  |
 |**USUARIOS**|
 |api/usuarios        |GET        |Get all users          |A    |  ❌  |
 |api/usuarios/{email}|GET        |Get a user by email    |A    |  ❌  |
@@ -48,14 +48,12 @@ Reference of roles;
 ## Pending Tasks
 - [ ] Test all endpoints
 - [ ] Implement support for shopping cart and orders funcionality
-- [ ] Implemente stronger validation in controllers
+- [ ] Implement stronger validation in controllers
 
 ## Security Practices
-- Data input validation
+- Validation of data types, lengths, and formats
 - Authentication and password management
 - Authorization (role-based access control)
-- Keeping it simple
 - Cryptography practices
 - Error handling and logging
-- Data protection
 - Threat modeling

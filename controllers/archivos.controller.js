@@ -1,7 +1,12 @@
 const {archivo} = require('../models')
 const fs = require('fs')
+const { body, param, validationResult } = require('express-validator')
 
 let self = {}
+
+self.validator = [
+    param('id').isInt().withMessage('El ID no es válido')
+]
 
 //GET api/archivos
 self.getAll = async function (req, res, next) {
@@ -15,9 +20,15 @@ self.getAll = async function (req, res, next) {
 
 //GET: api/archivos/{id}/detalle
 self.getDetalle = async function (req, res, next) {
-    let id = req.params.id
-    let data = null
+    const errors = validationResult(req)
+    if(!errors.isEmpty()) {
+        return res.status(400).json({
+            errores: errors.array()
+        })
+    }
 
+    const id = req.params.id
+    let data = null
     try {
         data = await archivo.findByPk(id, { attributes: [['id', 'archivoId'], 'mime', 'indb', 'nombre', 'size'] })
     } catch (error) {
@@ -33,9 +44,15 @@ self.getDetalle = async function (req, res, next) {
 
 //GET api/archivos/{id}
 self.get = async function (req, res, next) {
-    let id = req.params.id
-    let data = null
+    const errors = validationResult(req)
+    if(!errors.isEmpty()) {
+        return res.status(400).json({
+            errores: errors.array()
+        })
+    }
 
+    const id = req.params.id
+    let data = null
     try {
         data = await archivo.findByPk(id)
     } catch (error) {
@@ -107,8 +124,20 @@ self.update = async function (req, res, next) {
     if(!req.file) {
         return res.status(400).json('El archivo es obligatorio')
     }
+    
+    const errors = validationResult(req)
+    if(!errors.isEmpty()) {
+        try {
+            fs.existsSync('uploads/' + req.file.filename) && fs.unlinkSync('uploads/' + req.file.filename)
+        } catch (error) {
+            return next(error)
+        }
+        return res.status(400).json({
+            errores: errors.array()
+        })
+    }
 
-    let id = req.params.id
+    const id = req.params.id
     let imagen = null
     try {
         imagen = await archivo.findByPk(id)
@@ -120,7 +149,7 @@ self.update = async function (req, res, next) {
         return next(error)
     }
 
-    let binario = false
+    let binario = null
     let indb = false
     if (process.env.FILES_IN_BD == 'true') {
         try {
@@ -165,9 +194,15 @@ self.update = async function (req, res, next) {
 
 //DELETE: api/archivos/{id}
 self.delete = async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errores: errors.array()
+        })
+    }
+
     const id = req.params.id
     let imagen = null
-
     try {
         imagen = await archivo.findByPk(id)
     } catch (error) {
