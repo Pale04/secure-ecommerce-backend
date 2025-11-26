@@ -20,13 +20,13 @@ Reference of roles;
 |api/categorias/{id} |PUT        |Update a category by ID|A    |  ✅  |
 |api/categorias/{id} |DELETE     |Delete a category by ID|A    |  ✅  |
 |**PRODUCTOS**|
-|api/productos       |GET        |Get all products       |A, U |  ❌  |
-|api/productos/{id}  |GET        |Get a product by ID    |A, U |  ❌  |
-|api/productos       |POST       |Create a new product   |A    |  ❌  |
-|api/productos/{id}  |PUT        |Update a product by ID |A    |  ❌  |
-|api/productos/{id}  |DELETE     |Delete a product by ID |A    |  ❌  |
-|api/productos/{id}/categoria|GET |??                    | -   |  ❌  |
-|api/productos/{id}/categoria/{id}|DELETE|??             | -   |  ❌  |
+|api/productos       |GET        |Get all products       |A, U |  ✅  |
+|api/productos/{id}  |GET        |Get a product by ID    |A, U |  ✅  |
+|api/productos       |POST       |Create a new product   |A    |  ✅  |
+|api/productos/{id}  |PUT        |Update a product by ID |A    |  ✅  |
+|api/productos/{id}  |DELETE     |Delete a product by ID |A    |  ✅  |
+|api/productos/{id}/categoria|POST |Add a category to a product| A   |  ✅  |
+|api/productos/{id}/categoria/{id}|DELETE|Delete a category from a product| A   |  ✅  |
 |**ARCHIVOS**|
 |api/archivos        |GET        |Get all files          |A    |  ✅  |
 |api/archivos/{id}/detalle|GET   |Get details of a file  |A    |  ✅  |

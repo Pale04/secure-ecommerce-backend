@@ -1,13 +1,40 @@
 const { producto, categoria, Sequelize } = require('../models')
-const { body, validationResult } = require('express-validator')
+const { body, param, query, validationResult } = require('express-validator')
 const Op = Sequelize.Op
+const { archivo } = require('../models')
 
 let self = {}
 
-self.productoValidator = [
-    body('titulo', 'El campo {0} es obligatorio').not().isEmpty(),
-    body('descripcion', 'El campo {0} es obligatorio').not().isEmpty(),
-    body('precio', 'El campo {0} es obligatorio').not().isEmpty().isDecimal({ force_decimal: false }),
+self.queryValidator = [
+    query('s').trim().escape()
+]
+
+self.productoParamValidator = [
+    param('id').isInt().withMessage('El ID del producto no es valido')
+]
+
+self.productoBodyValidator = [
+    body('titulo')
+        .notEmpty().withMessage('El titulo es requerido')
+        .isLength({ max: 255 }).withMessage('El titulo es muy largo'),
+    body('descripcion')
+        .notEmpty().withMessage('La descripción es requerida'),
+    body('precio')
+        .notEmpty().withMessage('El precio es requerido')
+        .isDecimal({ force_decimal: false }).withMessage('El precio no es válido'),
+    body('archivoid')
+        .optional()
+        .isInt().withMessage('El ID del archivo no es válido')
+]
+
+self.categoriaBodyValidator = [
+    body('categoriaid')
+        .notEmpty().withMessage('El ID de la categoria es requerido')
+        .isInt().withMessage('El ID de la categoria no es valido')
+]
+
+self.categoriaParamValidator = [
+    param('categoriaid').isInt().withMessage('El ID de la categoria no es valido')
 ]
 
 //GET: api/productos
@@ -43,11 +70,16 @@ self.getAll = async function (req, res, next) {
 
 //GET: api/productos/{id}
 self.get = async function (req, res, next) {
-    let id = req.params.id
-    let data = null
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).send({
+            errors: errors.array()
+        })
+    }
 
+    let data = null
     try {
-        data = await producto.findByPk(id, {
+        data = await producto.findByPk(req.params.id, {
             attributes: [['id', 'productoId'], 'titulo', 'descripcion', 'precio', 'archivoid'],
             include: {
                 model: categoria,
@@ -71,16 +103,28 @@ self.get = async function (req, res, next) {
 self.create = async function (req, res, next) {
     const errors = validationResult(req)
     if(!errors.isEmpty()) {
-        throw new Error(JSON.stringify(errors));
+        return res.status(400).json({
+            errors: errors.array()
+        })
     }
     
     let data
     try {
+        let archivoId = null
+        if (req.body.archivoid) {
+            const file = await archivo.findByPk(req.body.archivoid)
+            if (file) {
+                archivoId = file.id
+            } else {
+                return res.status(400).send()
+            }
+        }
+        
         data = await producto.create({
             titulo: req.body.titulo,
             descripcion: req.body.descripcion,
             precio: req.body.precio,
-            archivoid: req.body.archivoid || null
+            archivoid: archivoId
         })
     } catch (error) {
         return next(error)
@@ -94,18 +138,29 @@ self.create = async function (req, res, next) {
 self.update = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        throw new Error(JSON.stringify(errors))
+        return res.status(400).json({
+            errors: errors.array()
+        })
     }
 
-    let id = req.params.id
     let data
     try {
+        let archivoId = null
+        if (req.body.archivoid) {
+            const file = await archivo.findByPk(req.body.archivoid)
+            if (file) {
+                archivoId = file.id
+            } else {
+                return res.status(400).send()
+            }
+        }
+
         data = await producto.update({
             titulo: req.body.titulo,
             descripcion: req.body.descripcion,
             precio: req.body.precio,
-            archivoid: req.body.archivoid || null
-        }, { where: {id: id} })
+            archivoid: archivoId
+        }, { where: {id: req.params.id} })
     } catch (error) {
         return next(error)
     }
@@ -114,15 +169,21 @@ self.update = async function (req, res, next) {
         return res.status(404).send()
     }
 
-    req.bitacora('producto.editar', id)
+    req.bitacora('producto.editar', req.params.id)
     res.status(204).send()
 }
 
 //DELETE: api/productos/{id}
 self.delete = async function (req, res, next) {
-    let id = req.params.id
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errors: errors.array()
+        })
+    }
+
+    const id = req.params.id
     let data = null
-   
     try {
         data = await producto.findByPk(id)
         if (data) {
@@ -142,9 +203,15 @@ self.delete = async function (req, res, next) {
 
 //POST: api/productos/{id}/categoria
 self.asignaCategoria = async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errors: errors.array()
+        })
+    }
+
     let itemToAssign = null
     let item = null
-
     try {
         itemToAssign = await categoria.findByPk(req.body.categoriaid)
         item = await producto.findByPk(req.params.id)
@@ -165,9 +232,15 @@ self.asignaCategoria = async function (req, res, next) {
 
 //DELETE: api/prodcutos/{id}/categoria/{id}
 self.eliminaCategoria = async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errors: errors.array()
+        })
+    }
+
     let itemToRemove = null
     let item = null
-
     try {
         itemToRemove = await categoria.findByPk(req.params.categoriaid)
         item = await producto.findByPk(req.params.id)
