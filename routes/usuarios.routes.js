@@ -5,16 +5,16 @@ const Authorize = require('../middlewares/auth.middleware')
 //GET: api/usuarios
 router.get('/', Authorize('Administrador'), usuarios.getAll)
 
-//GET: api/usuarios/email
-router.get('/:email', Authorize('Administrador'), usuarios.get)
+//GET: api/usuarios/{email}
+router.get('/:email', Authorize('Administrador'), usuarios.paramValidator, usuarios.get)
 
 //POST: api/usuarios
-router.post('/', usuarios.create)
+router.post('/', usuarios.bodyValidator, usuarios.create)
 
 //PUT: api/usuarios/{email}
-router.put('/:email', Authorize('Administrador'), usuarios.update)
+router.put('/:email', Authorize('Administrador'), [...usuarios.paramValidator, ...usuarios.bodyValidator], usuarios.update)
 
 //DELETE: api/usuarios/{email}
-router.delete('/:email', Authorize('Administrador'), usuarios.delete)
+router.delete('/:email', Authorize('Administrador'), usuarios.paramValidator, usuarios.delete)
 
 module.exports = router

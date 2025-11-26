@@ -35,13 +35,13 @@ Reference of roles;
 |api/archivos/{id}   |PUT        |Update a file by ID    |A    |  ✅  |
 |api/archivos/{id}   |DELETE     |Delete a file by ID    |A    |  ✅  |
 |**USUARIOS**|
-|api/usuarios        |GET        |Get all users          |A    |  ❌  |
-|api/usuarios/{email}|GET        |Get a user by email    |A    |  ❌  |
-|api/usuarios        |POST       |Create a new user      |A    |  ❌  |
-|api/usuarios/{email}|PUT        |Update a user by email |A    |  ❌  |
-|api/usuarios/{email}|DELETE     |Delete a user by email |A    |  ❌  |
+|api/usuarios        |GET        |Get all users          |A    |  ✅  |
+|api/usuarios/{email}|GET        |Get a user by email    |A    |  ✅  |
+|api/usuarios        |POST       |Create a new user      |A    |  ✅  |
+|api/usuarios/{email}|PUT        |Update a user by email |A    |  ✅  |
+|api/usuarios/{email}|DELETE     |Delete a user by email |A    |  ✅  |
 |**ROLES**|
-|api/roles           |GET        |Get all roles          |A    |  ❌  |
+|api/roles           |GET        |Get all roles          |A    |  ✅  |
 |**BITACORA**|
 |api/bitacora        |GET        |Get all logs           |A    |  ✅  |
 

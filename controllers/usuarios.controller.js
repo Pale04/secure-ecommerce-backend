@@ -1,8 +1,31 @@
+const { error } = require('console')
 const { usuario, rol, Sequelize } = require('../models')
 const bcrypt = require('bcrypt')
 const crypto = require('crypto')
+const { body, param, validationResult } = require('express-validator')
+const { where } = require('sequelize')
 
 let self = {}
+
+self.paramValidator = [
+    param('email').isEmail().withMessage('El correo no es valido'),
+]
+
+self.bodyValidator = [
+    body('email')
+        .notEmpty().withMessage('El correo es necesario')
+        .isLength({ max: 255 }).withMessage('El correo es muy largo')
+        .isEmail().withMessage('El correo no es valido'),
+    body('password')
+        .notEmpty().withMessage('La contraseña es requerida')
+        //.isStrongPassword()
+        .isLength({ max: 255 }).withMessage('La contraseña es muy larga'),
+    body('nombre')
+        .notEmpty().withMessage('El nombre es requerido')
+        .isLength({ max: 255 }).withMessage('El nombre es muy largo'),
+    body('rol')
+        .notEmpty().withMessage('El rol es requerido')
+]
 
 //GET: api/usuarios
 self.getAll = async function (req, res, next) {
@@ -20,12 +43,17 @@ self.getAll = async function (req, res, next) {
 
 //GET: api/usuarios/{email}
 self.get = async function (req, res, next) {
-    const email = req.params.email
-    let data = null
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errrors: errors.array()
+        })
+    }
 
+    let data = null
     try {
         data = await usuario.findOne({
-            where: { email: email },
+            where: { email: req.params.email },
             raw: true,
             attributes: ['id', 'email', 'nombre', [Sequelize.col('rol.nombre'), 'rol']],
             include: { model: rol, attributes: []}
@@ -43,19 +71,33 @@ self.get = async function (req, res, next) {
 
 //POST: api/usuarios
 self.create = async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errors: errors.array()
+        })
+    }
+
     let rolUsuario = null
     let data = null
-    //TODO: valida rol que viene en el body
-
     try {
+        if (await usuario.findOne({ where: { email: req.body.email } })) {
+            return res.status(409).json({
+                msg: 'Correo en uso'
+            })
+        }
         rolUsuario = await rol.findOne({ where: { nombre: req.body.rol } })
-        data = await usuario.create({
-            id: crypto.randomUUID(),
-            email: req.body.email,
-            passwordhash: await bcrypt.hash(req.body.password, 10),
-            nombre: req.body.nombre,
-            rolid: rolUsuario.id
-        })
+        if (rolUsuario) {
+            data = await usuario.create({
+                id: crypto.randomUUID(),
+                email: req.body.email,
+                passwordhash: await bcrypt.hash(req.body.password, 10),
+                nombre: req.body.nombre,
+                rolid: rolUsuario.id
+            })
+        } else {
+            return res.status(400).send()
+        }
     } catch (error) {
         return next(error)
     }
@@ -66,24 +108,32 @@ self.create = async function (req, res, next) {
             id: data.id,
             email: data.email,
             nombre: data.nombre,
-            rolid: rolUsuario.nombre
+            rol: rolUsuario.nombre
         })
     }
 }
 
 //PUT: api/usuarios/{email}
 self.update = async function (req, res, next) {
-    const email = req.params.email
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errors: errors.array()
+        })
+    }
+
     let data = null
-    //TODO: validar rol del body
-    
     try {
         const rolUsuario = await rol.findOne({ where: { nombre: req.body.rol } })
-        req.body.rolid = rolUsuario.id
-        data = await usuario.update(
-            req.body, 
-            { where: { email: email} }
-        ) 
+        if (!rolUsuario) {
+            return res.status(400).send()
+        }
+
+        data = await usuario.update({
+            passwordhash: await bcrypt.hash(req.body.password, 10),
+            nombre: req.body.nombre,
+            rolid: rolUsuario.id
+        }, { where: { email: req.params.email} }) 
     } catch(error) {
         return next(error)
     }
@@ -92,18 +142,23 @@ self.update = async function (req, res, next) {
         return res.status(404).send()
     }
 
-    req.bitacora('usuarios.editar', email)
+    req.bitacora('usuarios.editar', req.params.email)
     res.status(204).send()
 }
 
 //DELETE: api/usuarios/{email}
 self.delete = async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errors: errors.array()
+        })
+    }
     const email = req.params.email
     let data = null
-
     try {
         data = await usuario.findOne({ where: { email: email } })
-        if(data.protegido) {
+        if(data && data.protegido) {
             return res.status(403).send()
         }
         data = await usuario.destroy({ where: { email: email } })
@@ -115,7 +170,7 @@ self.delete = async function (req, res, next) {
         req.bitacora('usuarios.eliminar', email)
         res.status(204).send()
     } else {
-        res.status(403).send()
+        res.status(404).send()
     }
 }
 
