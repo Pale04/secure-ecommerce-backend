@@ -2,6 +2,7 @@ const { producto, categoria, Sequelize } = require('../models')
 const { body, param, query, validationResult } = require('express-validator')
 const Op = Sequelize.Op
 const { archivo } = require('../models')
+const { DOUBLE } = require('sequelize')
 
 let self = {}
 
@@ -21,7 +22,13 @@ self.productoBodyValidator = [
         .notEmpty().withMessage('La descripción es requerida'),
     body('precio')
         .notEmpty().withMessage('El precio es requerido')
-        .isDecimal({ force_decimal: false }).withMessage('El precio no es válido'),
+        .isDecimal({ force_decimal: false })
+        .toFloat().custom(value => {
+            if (value < 1) {
+              throw new Error('El precio no es valido');
+            }
+            return true;
+          }),
     body('archivoid')
         .optional()
         .isInt().withMessage('El ID del archivo no es válido')
