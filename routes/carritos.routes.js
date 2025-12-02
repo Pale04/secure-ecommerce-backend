@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const ctrl = require('../controllers/carritos.controller');
+const ctrl = require('../controllers/carrito.controller');
 const val = require('../validators/carrito.validators');
 const { validationResult } = require('express-validator');
 const Auth = require('../middlewares/auth.middleware'); // middleware que pone req.user
@@ -11,7 +11,7 @@ const handleValidation = (req, res, next) => {
 };
 
 router.get('/actual', Auth('Usuario'), ctrl.getActual);
-router.get('/historial', Auth('Usuario'), ctrl.historial);
+//router.get('/historial', Auth('Usuario'), ctrl.historial);
 
 router.post('/:idcarrito/productos', Auth('Usuario'), val.agregarProducto, handleValidation, ctrl.agregaProducto);
 router.put('/:idcarrito/productos/:idproducto', Auth('Usuario'), val.modificarCantidad, handleValidation, ctrl.modificarCantidad);
