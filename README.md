@@ -46,9 +46,7 @@ Reference of roles;
 |api/bitacora        |GET        |Get all logs           |A    |  ✅  |
 
 ## Pending Tasks
-- [ ] Test all endpoints
 - [ ] Implement support for shopping cart and orders funcionality
-- [ ] Implement stronger validation in controllers
 
 ## Security Practices
 - Validation of data types, lengths, and formats
