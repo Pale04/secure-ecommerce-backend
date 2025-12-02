@@ -5,7 +5,9 @@ const { param, validationResult } = require('express-validator')
 let self = {}
 
 self.validator = [
-    param('id').isInt().withMessage('El ID no es válido')
+    param('id')
+        .isInt().withMessage('El ID no es válido')
+        .toInt()
 ]
 
 //GET api/archivos
@@ -22,9 +24,7 @@ self.getAll = async function (req, res, next) {
 self.getDetalle = async function (req, res, next) {
     const errors = validationResult(req)
     if(!errors.isEmpty()) {
-        return res.status(400).json({
-            errores: errors.array()
-        })
+        return res.status(400).send()
     }
 
     const id = req.params.id
@@ -46,9 +46,7 @@ self.getDetalle = async function (req, res, next) {
 self.get = async function (req, res, next) {
     const errors = validationResult(req)
     if(!errors.isEmpty()) {
-        return res.status(400).json({
-            errores: errors.array()
-        })
+        return res.status(400).send()
     }
 
     const id = req.params.id
@@ -132,9 +130,7 @@ self.update = async function (req, res, next) {
         } catch (error) {
             return next(error)
         }
-        return res.status(400).json({
-            errores: errors.array()
-        })
+        return res.status(400).send()
     }
 
     const id = req.params.id
@@ -196,9 +192,7 @@ self.update = async function (req, res, next) {
 self.delete = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errores: errors.array()
-        })
+        return res.status(400).send()
     }
 
     const id = req.params.id

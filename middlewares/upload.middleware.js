@@ -1,10 +1,12 @@
 const multer = require('multer')
+const MAX_FILE_SIZE = 100 * 1024
 
 const imageFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/jpg') && file.originalname.endsWith('.jpg')) {
-        cb(null, true)
+    if (!file.mimetype.startsWith('image/jpg') || !file.originalname.endsWith('.jpg')) {
+        cb('Solamente se permiten imágenes con extensión JPG', false)
     } else {
-        cb('Solo se permiten imágenes con extensión JPG', false)
+        console.log(file)
+        cb(null,true)
     }
 }
 
@@ -19,7 +21,10 @@ var storage = multer.diskStorage({
 
 var uploadFile = multer({
     storage: storage, 
-    fileFilter: imageFilter 
+    fileFilter: imageFilter,
+    limits: {
+        fileSize: MAX_FILE_SIZE
+    }
 })
 
 module.exports = uploadFile

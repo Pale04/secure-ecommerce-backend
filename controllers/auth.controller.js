@@ -6,8 +6,11 @@ const { body, validationResult } = require('express-validator')
 let self = {}
 self.validator = [
     body('email')
+        .trim()
+        .escape()
         .notEmpty().withMessage('El correo es necesario')
         .isLength({ max: 255 }).withMessage('El correo es muy largo')
+        .normalizeEmail()
         .isEmail().withMessage('El correo no es valido'),
     body('password')
         .notEmpty().withMessage('La contraseña es requerida')
@@ -18,9 +21,7 @@ self.validator = [
 self.login = async function (req, res, next) {
     const errors = validationResult(req)
     if(!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     const { email, password } = req.body

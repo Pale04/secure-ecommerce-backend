@@ -1,30 +1,42 @@
-const { error } = require('console')
 const { usuario, rol, Sequelize } = require('../models')
 const bcrypt = require('bcrypt')
 const crypto = require('crypto')
 const { body, param, validationResult } = require('express-validator')
-const { where } = require('sequelize')
 
 let self = {}
 
 self.paramValidator = [
-    param('email').isEmail().withMessage('El correo no es valido'),
+    param('email')
+        .escape()
+        .isLength({ max: 255 }).withMessage('El correo es muy largo')
+        .normalizeEmail()
+        .isEmail().withMessage('El correo no es valido'),
 ]
 
 self.bodyValidator = [
     body('email')
+        .trim()
+        .escape()
         .notEmpty().withMessage('El correo es necesario')
         .isLength({ max: 255 }).withMessage('El correo es muy largo')
+        .normalizeEmail()
         .isEmail().withMessage('El correo no es valido'),
     body('password')
+        .trim()
+        .escape()
         .notEmpty().withMessage('La contraseña es requerida')
         //.isStrongPassword()
         .isLength({ max: 255 }).withMessage('La contraseña es muy larga'),
     body('nombre')
+        .trim()
+        .escape()
         .notEmpty().withMessage('El nombre es requerido')
         .isLength({ max: 255 }).withMessage('El nombre es muy largo'),
     body('rol')
+        .trim()
+        .escape()
         .notEmpty().withMessage('El rol es requerido')
+        .isLength({ max: 255 })
 ]
 
 //GET: api/usuarios
@@ -45,9 +57,7 @@ self.getAll = async function (req, res, next) {
 self.get = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errrors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     let data = null
@@ -73,9 +83,7 @@ self.get = async function (req, res, next) {
 self.create = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     let rolUsuario = null
@@ -117,9 +125,7 @@ self.create = async function (req, res, next) {
 self.update = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     let data = null
@@ -150,9 +156,7 @@ self.update = async function (req, res, next) {
 self.delete = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
     const email = req.params.email
     let data = null

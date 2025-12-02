@@ -5,12 +5,16 @@ let self = {}
     
 self.bodyValidator = [
     body('nombre')
+        .trim()
+        .escape()
         .notEmpty().withMessage('El nombre es necesario')
         .isLength({ max: 255}).withMessage('El nombre es muy largo')
 ]
 
 self.paramValidator = [
-    param('id').isInt().withMessage('El ID no es válido')
+    param('id')
+        .isInt().withMessage('El ID no es válido')
+        .toInt()
 ]
 
 //GET api/categorias
@@ -28,9 +32,7 @@ self.getAll = async (req, res, next) => {
 self.get = async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     let id = req.params.id
@@ -51,9 +53,7 @@ self.get = async (req, res, next) => {
 self.create = async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     let data 
@@ -71,9 +71,7 @@ self.create = async (req, res, next) => {
 self.update = async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     const id = req.params.id
@@ -97,9 +95,7 @@ self.update = async (req, res, next) => {
 self.delete = async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     const id = req.params.id

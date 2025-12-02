@@ -6,18 +6,27 @@ const { archivo } = require('../models')
 let self = {}
 
 self.queryValidator = [
-    query('s').trim().escape()
+    query('s')
+        .trim()
+        .escape()
+        .isLength({ max: 255 })
 ]
 
 self.productoParamValidator = [
-    param('id').isInt().withMessage('El ID del producto no es valido')
+    param('id')
+        .isInt().withMessage('El ID del producto no es valido')
+        .toInt()
 ]
 
 self.productoBodyValidator = [
     body('titulo')
+        .trim()
+        .escape()
         .notEmpty().withMessage('El titulo es requerido')
         .isLength({ max: 255 }).withMessage('El titulo es muy largo'),
     body('descripcion')
+        .trim()
+        .escape()
         .notEmpty().withMessage('La descripción es requerida'),
     body('precio')
         .notEmpty().withMessage('El precio es requerido')
@@ -31,16 +40,20 @@ self.productoBodyValidator = [
     body('archivoid')
         .optional()
         .isInt().withMessage('El ID del archivo no es válido')
+        .toInt()
 ]
 
 self.categoriaBodyValidator = [
     body('categoriaid')
         .notEmpty().withMessage('El ID de la categoria es requerido')
         .isInt().withMessage('El ID de la categoria no es valido')
+        .toInt()
 ]
 
 self.categoriaParamValidator = [
-    param('categoriaid').isInt().withMessage('El ID de la categoria no es valido')
+    param('categoriaid')
+        .isInt().withMessage('El ID de la categoria no es valido')
+        .toInt()
 ]
 
 //GET: api/productos
@@ -78,9 +91,7 @@ self.getAll = async function (req, res, next) {
 self.get = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).send({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     let data = null
@@ -109,9 +120,7 @@ self.get = async function (req, res, next) {
 self.create = async function (req, res, next) {
     const errors = validationResult(req)
     if(!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
     
     let data
@@ -144,9 +153,7 @@ self.create = async function (req, res, next) {
 self.update = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     let data
@@ -183,9 +190,7 @@ self.update = async function (req, res, next) {
 self.delete = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     const id = req.params.id
@@ -211,9 +216,7 @@ self.delete = async function (req, res, next) {
 self.asignaCategoria = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     let itemToAssign = null
@@ -223,6 +226,11 @@ self.asignaCategoria = async function (req, res, next) {
         item = await producto.findByPk(req.params.id)
         if (item && itemToAssign) {
             await item.addCategoria(itemToAssign)
+            if (!itemToAssign.protegida) {
+                categoria.update({
+                    protegida: true
+                }, { where: { id: itemToAssign.id } })
+            }
         }
     } catch (error) {
         return next(error)
@@ -240,9 +248,7 @@ self.asignaCategoria = async function (req, res, next) {
 self.eliminaCategoria = async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array()
-        })
+        return res.status(400).send()
     }
 
     let itemToRemove = null
