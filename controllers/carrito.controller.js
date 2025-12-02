@@ -1,28 +1,88 @@
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
 const { sequelize, usuario, carrito, productocarrito, producto } = require('../models');
+const { Console } = require('console');
 
-function uuid(){ return crypto.randomUUID ? crypto.randomUUID() : require('uuid').v4(); }
+const { v4: uuid } = require('uuid');
+
 
 module.exports = {
-  // Obtener carrito actual con detalles
   async getActual(req, res, next) {
     try {
-      const userId = req.user.id;
+      const email = req.user["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+
+      const usuarioDB = await usuario.findOne({
+        where: { email }
+      });
+
+      if (!usuarioDB) {
+        return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      const userId = usuarioDB.id;
+
       let cart = await carrito.findOne({
         where: { usuarioid: userId, actual: 1 },
-        include: { model: productocarrito, as: 'itemsCarrito', include: { model: producto, as: 'producto' } }
+        include: [
+          {
+            model: productocarrito,
+            as: 'productocarritos',
+            include: [
+              {
+                model: producto,
+                as: 'producto'
+              }
+            ]
+          }
+        ]
       });
-      if (!cart) {
-        cart = await carrito.create({ id: uuid(), usuarioid: userId, actual: 1 });
-      }
-      const items = cart.itemsCarrito || [];
-      const total = items.reduce((s, it) => s + parseFloat(it.subtotal), 0);
-      cart.total = total;
-      res.json(cart);
-    } catch (err) { next(err); }
-  },
 
+      if (!cart) {
+        return res.json({
+          id: "",
+          email,
+          actual: true,
+          fechaCompra: null,
+          itemsCarrito: [],
+          total: 0
+        });
+      }
+
+      // ---------- MAPEO LOS ITEMS AL FORMATO .NET ----------
+      const items = cart.productocarritos.map(pc => ({
+        idCarrito: cart.id,
+        idProducto: pc.productoid,
+        cantidad: pc.cantidad,
+        producto: pc.producto
+          ? {
+              productoId: pc.producto.id,
+              titulo: pc.producto.titulo,
+              precio: pc.producto.precio,
+              archivoId: pc.producto.archivoid,
+              categorias: pc.producto.categorias ?? []
+            }
+          : null
+      }));
+
+      const total = items.reduce(
+        (sum, item) => sum + ((item.producto?.precio ?? 0) * item.cantidad),
+        0
+      );
+
+      return res.json({
+        id: cart.id,
+        email,
+        actual: cart.actual === 1,
+        fechaCompra: cart.fechaCompra ?? null,
+        itemsCarrito: items,
+        total
+      });
+
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  },
   // Agregar producto (o incrementar si existe)
   async agregaProducto(req, res, next) {
     const errors = validationResult(req);
@@ -30,11 +90,17 @@ module.exports = {
 
     const { idcarrito } = req.params;
     const { idproducto, cantidad } = req.body;
-    const userId = req.user.id;
+    const email = req.user["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
 
+    const usuarioDB = await usuario.findOne({ where: { email } });
+    if (!usuarioDB)
+      return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const userId = usuarioDB.id;
+    
     const t = await sequelize.transaction();
     try {
-      const cart = await carrito.findOne({ where: { id: idcarrito, usuarioid: userId, actual: 1 }, transaction: t });
+      const cart = await carrito.findOne({ where: { usuarioid: userId, actual: 1 }, transaction: t });
       if (!cart) { await t.rollback(); return res.status(404).json({ error: 'Carrito no encontrado' }); }
 
       const prod = await producto.findByPk(idproducto, { transaction: t });
@@ -110,7 +176,14 @@ module.exports = {
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const { idcarrito, idproducto } = req.params;
-    const userId = req.user.id;
+    
+     const email = req.user["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+
+    const usuarioDB = await usuario.findOne({ where: { email } });
+    if (!usuarioDB)
+      return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const userId = usuarioDB.id;
 
     const t = await sequelize.transaction();
     try {
@@ -133,22 +206,33 @@ module.exports = {
   },
 
   async comprar(req, res, next) {
+    console.log("Iniciando compra...");
     const { id } = req.params;
-    const userId = req.user.id;
+    
+    const { idcarrito, idproducto } = req.params;
+    const { cantidad } = req.body;
+    
+    const email = req.user["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+
+    const usuarioDB = await usuario.findOne({ where: { email } });
+    if (!usuarioDB)
+      return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const userId = usuarioDB.id;
     const t = await sequelize.transaction();
     try {
       const cart = await carrito.findOne({
         where: { id, usuarioid: userId, actual: 1 },
-        include: { model: productocarrito, as: 'itemsCarrito', include: { model: producto, as: 'producto' } },
+        include: { model: productocarrito, as: 'productocarritos', include: { model: producto, as: 'producto' } },
         transaction: t
       });
       if (!cart) { await t.rollback(); return res.status(404).json({ error: 'Carrito no válido' }); }
 
       let total = 0;
-      for (const it of cart.itemsCarrito) {
-        total += parseFloat(it.subtotal);
-      }
-      total = parseFloat(total.toFixed(2));
+    for (const it of cart.productocarritos) {
+      total += parseFloat(it.producto.precio) * it.cantidad;
+    }
+    total = parseFloat(total.toFixed(2));
 
       await cart.update({ actual: 0, fechacompra: new Date(), total }, { transaction: t });
 

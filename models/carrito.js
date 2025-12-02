@@ -7,7 +7,14 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     usuarioid: DataTypes.CHAR(36),
-    actual: DataTypes.TINYINT
+    actual: {
+      type: DataTypes.BOOLEAN,
+      get() {
+        const raw = this.getDataValue('actual');
+        return !!raw; // fuerza true/false
+      }
+    }
+
   }, { tableName: 'carrito' });
 
   Carrito.associate = (models) => {

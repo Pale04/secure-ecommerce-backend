@@ -5,7 +5,6 @@ const imageFilter = (req, file, cb) => {
     if (!file.mimetype.startsWith('image/jpg') || !file.originalname.endsWith('.jpg')) {
         cb('Solamente se permiten imágenes con extensión JPG', false)
     } else {
-        console.log(file)
         cb(null,true)
     }
 }

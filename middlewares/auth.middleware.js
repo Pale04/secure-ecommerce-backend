@@ -24,6 +24,8 @@ const Authorize = (rol) => {
         if(rol.split(',').indexOf(decodedToken[ClaimTypes.Role]) == -1) {
             return next(error)
         }
+
+        req.user = decodedToken;
         req.decodedToken = decodedToken
         
         const minutosRestantes = (decodedToken.exp - (new Date().getTime() / 1000)) / 60

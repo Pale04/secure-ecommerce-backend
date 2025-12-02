@@ -5,6 +5,7 @@ const { validationResult } = require('express-validator');
 const Auth = require('../middlewares/auth.middleware'); // middleware que pone req.user
 
 const handleValidation = (req, res, next) => {
+  console.log("VALIDANDO:", req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
   next();
