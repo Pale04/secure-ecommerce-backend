@@ -1,35 +1,45 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ3ZlcmFAdXYubXgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJHdWlsbGVybW8gVmVyYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluaXN0cmFkb3IiLCJpaXMiOiJTZXJ2aWRvckZlaUpXVCIsImF1ZCI6IkNsaWVudGVzRmVpSldUIiwiaWF0IjoxNzY0MTIxODczLCJleHAiOjE3NjQxMjMwNzN9.P3StfXteHdtbYrE9MqS8I923whBWDvsxeeYf2ZHi03A
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicGFsZTJAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZ2l2ZW5uYW1lIjoiUGFsZSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluaXN0cmFkb3IiLCJpaXMiOiJTZXJ2aWRvckZlaUpXVCIsImF1ZCI6IkNsaWVudGVzRmVpSldUIiwiaWF0IjoxNzY0NjU3NDM0LCJleHAiOjE3NjQ2NTg2MzR9.4O9nwDeuYaa2rIttk0nQSfWchB94SH3P0d0L54h6K_s
 
-GET http://localhost:3000/api/usuarios
-Authorization: Bearer {{token}}
-
-###
-GET http://localhost:3000/api/usuarios/gvera@uv.mx
-Authorization: Bearer {{token}}
-
-###
 POST http://localhost:3000/api/usuarios
 Content-Type: application/json
 
 {
-    "email": "pale@gmail.com",
+    "email": "pale2@gmail.com",
     "password": "securepassword",
     "nombre": "Pale",
     "rol": "Usuario"
 }
 
 ###
-PUT http://localhost:3000/api/usuarios/gvera@uv.mx
+
+POST http://localhost:3000/api/auth
+Content-Type: application/json
+
+{
+    "email": "pale2@gmail.com",
+    "password": "securepassword"
+}
+
+###
+GET http://localhost:3000/api/usuarios/pale2@gmail.com
+Authorization: Bearer {{token}}
+
+###
+GET http://localhost:3000/api/usuarios
+Authorization: Bearer {{token}}
+
+###
+PUT http://localhost:3000/api/usuarios/pale2@gmail.com
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "email": "gvera@uv.mx",
-    "password": "patito",
-    "nombre": "Pale Updated",
+    "email": "pale2@gmail.com",
+    "password": "securepassword",
+    "nombre": "Pale actualizado",
     "rol": "Administrador"
 }
 
 ###
-DELETE http://localhost:3000/api/usuarios/pale@gmail.com
+DELETE http://localhost:3000/api/usuarios/pale2@gmail.com
 Authorization: Bearer {{token}}
