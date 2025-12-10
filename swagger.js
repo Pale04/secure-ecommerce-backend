@@ -9,6 +9,7 @@ const doc = {
 }
 
 const outputFile = './swagger-output.json'
-const routes = ['./index.js']
+// include route files directly so swagger-autogen picks up all route definitions
+const routes = ['./index.js', './routes/*.js']
 
 swaggerAutogen(outputFile, routes, doc)

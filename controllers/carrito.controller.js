@@ -136,34 +136,85 @@ module.exports = {
   },
 
   async modificarCantidad(req, res, next) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) 
+    return res.status(400).json({ errors: errors.array() });
 
-    const { idcarrito, idproducto } = req.params;
-    const { cantidad } = req.body;
-    const userId = req.user.id;
+  const { idcarrito, idproducto } = req.params;
+  const { cantidad } = req.body;
+  
+    const email = req.user["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+
+    const usuarioDB = await usuario.findOne({ where: { email } });
+    if (!usuarioDB)
+      return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const userId = usuarioDB.id;
+
+  //Validación adicional: cantidad
+  const nuevaCantidad = Number(cantidad);
+    if (!Number.isInteger(nuevaCantidad) || nuevaCantidad <= 0) {
+      return res.status(400).json({ error: "La cantidad debe ser un entero mayor a 0" });
+    }
 
     const t = await sequelize.transaction();
     try {
-      const cart = await carrito.findOne({ where: { id: idcarrito, usuarioid: userId, actual: 1 }, transaction: t });
-      if (!cart) { await t.rollback(); return res.status(404).json({ error: 'Carrito no encontrado' }); }
+      const cart = await carrito.findOne({
+        where: { id: idcarrito, usuarioid: userId, actual: 1 },
+        transaction: t
+      });
+
+      if (!cart) {
+        await t.rollback();
+        return res.status(404).json({ error: "Carrito no encontrado" });
+      }
 
       const prod = await producto.findByPk(idproducto, { transaction: t });
-      if (!prod) { await t.rollback(); return res.status(404).json({ error: 'Producto no existe' }); }
+      if (!prod) {
+        await t.rollback();
+        return res.status(404).json({ error: "Producto no existe" });
+      }
 
-      const item = await productocarrito.findOne({ where: { carritoid: idcarrito, productoid: idproducto }, transaction: t });
-      if (!item) { await t.rollback(); return res.status(404).json({ error: 'Producto no está en carrito' }); }
+      const item = await productocarrito.findOne({
+        where: { carritoid: idcarrito, productoid: idproducto },
+        transaction: t
+      });
 
-      item.cantidad = cantidad;
-      item.subtotal = parseFloat((prod.precio * cantidad).toFixed(2));
+      if (!item) {
+        await t.rollback();
+        return res.status(404).json({ error: "Producto no está en carrito" });
+      }
+
+      //VALIDACIÓN: si la cantidad es igual, no hacer nada
+      if (item.cantidad === nuevaCantidad) {
+        await t.rollback();
+        return res.status(200).json({ msg: "Cantidad sin cambios" });
+      }
+
+      // Actualizar item
+      item.cantidad = nuevaCantidad;
+      const precio = Number(prod.precio);
+      if (isNaN(precio)) {
+        await t.rollback();
+        return res.status(500).json({ error: "Precio del producto inválido" });
+      }
+
+      item.subtotal = parseFloat((precio * nuevaCantidad).toFixed(2));
+
       await item.save({ transaction: t });
 
-      const items = await productocarrito.findAll({ where: { carritoid: idcarrito }, transaction: t });
+      // Recalcular total
+      const items = await productocarrito.findAll({
+        where: { carritoid: idcarrito },
+        transaction: t
+      });
+
       const total = items.reduce((s, it) => s + parseFloat(it.subtotal), 0);
       await cart.update({ total }, { transaction: t });
 
       await t.commit();
-      res.sendStatus(204);
+      return res.status(204).send();
+
     } catch (err) {
       await t.rollback();
       next(err);
