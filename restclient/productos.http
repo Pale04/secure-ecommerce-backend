@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ3ZlcmFAdXYubXgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJHdWlsbGVybW8gVmVyYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluaXN0cmFkb3IiLCJpaXMiOiJTZXJ2aWRvckZlaUpXVCIsImF1ZCI6IkNsaWVudGVzRmVpSldUIiwiaWF0IjoxNzY0MTE4NTU5LCJleHAiOjE3NjQxMTk3NTl9.0dq9Zc7wy1bq8xpO8Wa1NztF137VnpDB0Y8MvgPCqLs
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ3ZlcmFAdXYubXgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJQYWxlIFVwZGF0ZWQiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbmlzdHJhZG9yIiwiaWlzIjoiU2Vydmlkb3JGZWlKV1QiLCJhdWQiOiJDbGllbnRlc0ZlaUpXVCIsImlhdCI6MTc2NDY0Njg0OCwiZXhwIjoxNzY0NjQ4MDQ4fQ.KItreZJVnMlhqj4IZ-kziNtJp199HxlxZ1afDw0O6uw
 
 ###
 GET http://localhost:3000/api/productos
@@ -20,7 +20,7 @@ Authorization: Bearer {{ token }}
 {
     "titulo": "Producto de prueba",
     "descripcion": "Este es un producto de prueba",
-    "precio": 150,
+    "precio": 99999999.99,
     "archivoid": 8
 }
 
@@ -41,12 +41,12 @@ DELETE http://localhost:3000/api/productos/null
 Authorization: Bearer {{ token }}
 
 ###
-POST http://localhost:3000/api/productos/5/categoria
+POST http://localhost:3000/api/productos/136/categoria
 Content-Type: application/json
 Authorization: Bearer {{ token }}
 
 {
-  "categoriaid": "5"
+  "categoriaid": "19"
 }
 
 ###

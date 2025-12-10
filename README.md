@@ -45,9 +45,6 @@ Reference of roles;
 |**BITACORA**|
 |api/bitacora        |GET        |Get all logs           |A    |  ✅  |
 
-## Pending Tasks
-- [ ] Implement support for shopping cart and orders funcionality
-
 ## Security Practices
 - Validation of data types, lengths, and formats
 - Authentication and password management
